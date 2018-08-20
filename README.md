@@ -1,3 +1,3 @@
 # nc-downloader
 
-Downloader for files on Nextcloud. This script can be helpful to recover files with malformed signature after encryption.
+Downloader for files on Nextcloud. This script can be helpful to recover files with malformed signature after encryption. By removing the signature check it is possible to download the files decrypted regardless of the signature. Unfortunately the server does deliver a different file size and breaks off the download before the client. The client thinks the connection is lost and the file was not downloaded completely even though it is already downloaded.
