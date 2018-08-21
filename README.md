@@ -1,3 +1,26 @@
+# obsolete solution -> discovered a better one (that actually works :P)
+
+[to follow the chronical order start reading at the nc-downloader section]
+
+After checking the downloads I discovered that while the JPEGs open without any problem my RAW files didn't. Looking closer at the JPEGs I could see that in the last pixel line there were some blocks missing. So the download wasn't finished. Following up on the error message that gets displayed in Nextcloud in the `hasSignature()` call of `splitMetaData()` I discovered that the encrypted data field was empty and therefore there can't be a signature in the file. To bypass this I have added following if clause into the function `symmetricDecryptFileContent()` in `apps/encryption/lib/Crypto/Crypt.php`:
+
+                if ($keyFileContents == '') {
+                        return '';
+                }
+
+I have put this code as the first command in the `symmetricDecryptFileContent()`. Together with disabling the signature check (putting `return true;` in the `checkSignature()` function in the same file):
+
+```
+    private function checkSignature($data, $passPhrase, $expectedSignature) {
+            $signature = $this->createSignature($data, $passPhrase);
+            if (!hash_equals($expectedSignature, $signature)) {
+                    return true;
+                    throw new GenericEncryptionException('Bad Signature', $this->l->t('Bad Signature'));
+            }
+    }
+```
+I can now see the previews in the web interface and download all files decrypted and even download the folders as zip-files. My script is not necessary anymore :smiley:
+
 # nc-downloader
 
 Downloader for files on Nextcloud.
